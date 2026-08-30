@@ -37,7 +37,7 @@ OPERATIONS BRIEF (Plain English)
 
 - **3 Specialized Analysis Layers**:
   - **Exceedance Analysis (`/v1/heatmap`)**: Detects cumulative hours above safety thresholds (e.g., $35^\circ\text{C}$) to guide driver restaging and route selection.
-  - **Persistence Analysis (`/v1/heatmap`)**: Evaluates unbroken, consecutive extreme heat exposure for worker safety and OSHA compliance.
+  - **Persistence Analysis (`/v1/heatmap`)**: Evaluates unbroken, consecutive extreme heat exposure for worker safety and OSHA compliance
   - **Point-in-Time Snapshot & Heat Index (`/v1/env_params`)**: Cross-references ambient temperature with calculated Heat Index, wet-bulb temperature, and air quality indices.
 - **Enterprise Safety Guardrails & Prompt Injection Prevention**:
   - Intercepts adversarial jailbreaks (DAN mode, roleplay bypasses, delimiter hijacking) in **$<0.01\text{ms}$**.
