@@ -14,5 +14,5 @@
     }
   },
   "postCreateCommand": "pip install -r requirements.txt",
-  "postStartCommand": "nohup bash scripts/codespace_start.sh > /tmp/aegis.log 2>&1 & disown"
+  "postStartCommand": "nohup bash scripts/codespace_start.sh > /tmp/aegis.log 2>&1 & disown; nohup bash scripts/codespace_keepalive.sh > /tmp/keepalive.log 2>&1 & disown; bash scripts/codespace_makepublic.sh"
 }
