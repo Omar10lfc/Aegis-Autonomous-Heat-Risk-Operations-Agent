@@ -1,0 +1,26 @@
+name: pytest
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: Executor + geo tests
+        run: pytest backend/tests/test_executor.py backend/tests/test_geo.py -q
+        env:
+          FORTYGUARD_API_KEY: test-not-used
+          OPENAI_API_KEY: test-not-used
+          LANGCHAIN_TRACING_V2: "false"

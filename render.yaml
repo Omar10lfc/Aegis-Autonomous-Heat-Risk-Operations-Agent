@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: aegis-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONPATH
+        value: backend
+      - key: FORTYGUARD_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: LANGCHAIN_API_KEY
+        sync: false
+      - key: FORTYGUARD_BASE_URL
+        value: https://api.fortyguard.com
+      - key: FORTYGUARD_LIVE
+        value: "false"
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-20b
+      - key: GROQ_FALLBACK_MODELS
+        value: qwen/qwen3.6-27b
+      - key: OPENROUTER_MODEL
+        value: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+      - key: OPENROUTER_FALLBACK_MODELS
+        value: google/gemma-4-26b-a4b-it:free,minimax/minimax-m2.7:free
+      - key: LANGCHAIN_TRACING_V2
+        value: "false"
+      - key: AEGIS_SYNTH_LLM
+        value: "false"
+      - key: AEGIS_HOST
+        value: 0.0.0.0
