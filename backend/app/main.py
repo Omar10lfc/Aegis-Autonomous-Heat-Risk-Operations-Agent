@@ -1,5 +1,7 @@
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.agent.graph import configure_langsmith
 from app.api.routes import router
@@ -22,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 1. Mount API Router & Endpoints FIRST
 app.include_router(router)
 
 
@@ -33,3 +36,13 @@ async def health() -> dict[str, str]:
         "fortyguard_mode": "live" if settings.fortyguard_live else "cached",
         "llm_model": settings.primary_model_label(),
     }
+
+
+# 2. Mount Static Frontend if exported (Docker & Hugging Face Spaces unified container)
+for out_dir in [
+    Path("/app/frontend/out"),
+    Path(__file__).resolve().parents[2] / "frontend" / "out",
+]:
+    if out_dir.exists():
+        app.mount("/", StaticFiles(directory=str(out_dir), html=True), name="frontend")
+        break

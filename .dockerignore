@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+node_modules
+.next
+.pytest_cache
+*.log
+.DS_Store
+.devcontainer
+.opencode
+.qodo
+traces

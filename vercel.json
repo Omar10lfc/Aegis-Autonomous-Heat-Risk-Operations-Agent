@@ -1,0 +1,23 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.next",
+  "rewrites": [
+    {
+      "source": "/brief",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/status/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/report/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/index.py"
+    }
+  ]
+}

@@ -182,6 +182,25 @@ Push to a GitHub repo (e.g. `FortyGuard-Tech/aegis`). `.gitignore` already exclu
 3. Add env var `NEXT_PUBLIC_BACKEND_URL=https://aegis-backend.onrender.com` (needed even in cached mode so polling works).
 4. Deploy. Site URL like `https://aegis-frontend.vercel.app`. Open it, run the example brief, confirm the status bar advances and a cited memo + map render.
 
+### 8d. Unified All-in-One Deployment on Hugging Face Spaces (Docker SDK)
+
+Aegis includes a multi-stage `Dockerfile` that packages both the Next.js frontend and FastAPI backend into a single container running on Hugging Face Spaces:
+
+1. Go to [huggingface.co/new-space](https://huggingface.co/new-space).
+2. Set Space Name (e.g. `aegis-heat-risk-agent`).
+3. Select **Docker** as the Space SDK (Blank).
+4. Connect or push your repo:
+   ```powershell
+   git remote add space https://huggingface.co/spaces/<your-username>/<space-name>
+   git push space main
+   ```
+5. In **Space Settings → Variables and Secrets**, add your environment variables:
+   - `GROQ_API_KEY` (or `OPENAI_API_KEY`)
+   - `FORTYGUARD_API_KEY` (optional)
+   - `FORTYGUARD_LIVE` = `false`
+   - `LANGCHAIN_API_KEY` (optional)
+6. Hugging Face Spaces will automatically build the container, serve port `7860`, and launch the full interactive app!
+
 Caveats:
 - Jobs live in-process, so a Render instance restart clears in-flight `job_id`s; re-submit to restart a run. Fine for a demo.
 - The free Render plan powers down idle instances; the first request after idle takes ~30–60 s to cold start.
