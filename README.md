@@ -33,7 +33,7 @@ OPERATIONS BRIEF (Plain English)
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 - **3 Specialized Analysis Layers**:
   - **Exceedance Analysis (`/v1/heatmap`)**: Detects cumulative hours above safety thresholds (e.g., $35^\circ\text{C}$) to guide driver restaging and route selection.
@@ -51,7 +51,7 @@ OPERATIONS BRIEF (Plain English)
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 Aegis orchestrates an autonomous, closed-loop intelligence pipeline built on **LangGraph**, verified against FortyGuard's street-level API, and monitored via **LangSmith**:
 
@@ -133,7 +133,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quickstart & Local Setup
+## Quickstart & Local Setup
 
 ### Prerequisites
 - **Python 3.11+**
@@ -175,7 +175,7 @@ Open **`http://localhost:3000`** in your browser.
 
 ---
 
-## 🧪 Testing & Evaluation Benchmark
+## Testing & Evaluation Benchmark
 
 Aegis includes an extensive 150-scenario evaluation harness and 187 automated tests.
 
@@ -207,7 +207,7 @@ Aegis includes an extensive 150-scenario evaluation harness and 187 automated te
 
 ---
 
-## 🌐 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -218,7 +218,7 @@ Aegis includes an extensive 150-scenario evaluation harness and 187 automated te
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 aegis/
@@ -245,7 +245,7 @@ aegis/
 
 ---
 
-## 🎥 Demo Video Guide
+## Demo Video Guide
 
 For a step-by-step guide and curated prompts to test during demo recordings, refer to [`docs/DEMO_QUESTIONS.md`](docs/DEMO_QUESTIONS.md).
 
