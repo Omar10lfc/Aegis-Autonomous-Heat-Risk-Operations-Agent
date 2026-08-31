@@ -2,6 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -48,6 +49,30 @@ class Settings(BaseSettings):
     aegis_llm_mode: str = "auto"
     # Template memo by default: deterministic, always cited, instant. LLM polish is opt-in.
     aegis_synth_llm: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_empty_strings(cls, values: dict[str, Any]) -> dict[str, Any]:
+        """Vercel/Heroku set unset env vars as empty strings.
+        Pydantic rejects '' for bool/int/float fields, so we drop them
+        to let defaults apply."""
+        if not isinstance(values, dict):
+            return values
+        bool_fields = {"fortyguard_live", "langchain_tracing_v2", "aegis_synth_llm"}
+        numeric_fields = {
+            "fortyguard_max_aoi_mi2", "aegis_port",
+            "aegis_poll_timeout_seconds", "aegis_max_retries",
+            "aegis_initial_poll_delay_seconds", "aegis_max_poll_delay_seconds",
+        }
+        drop_if_empty = bool_fields | numeric_fields
+        for key in drop_if_empty:
+            if key in values and values[key] == "":
+                del values[key]
+            # Also check uppercase variants (env vars)
+            upper = key.upper()
+            if upper in values and values[upper] == "":
+                del values[upper]
+        return values
 
     def tracing_endpoint(self) -> str:
         return self.langsmith_endpoint or self.langchain_endpoint
