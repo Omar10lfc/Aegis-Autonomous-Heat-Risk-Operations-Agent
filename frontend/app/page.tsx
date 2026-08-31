@@ -280,8 +280,10 @@ export default function Home() {
                 id="example-btn"
                 type="button"
                 className="ghost"
-                onClick={() => setBrief(EXAMPLE)}
-                disabled={busy}
+                onClick={() => {
+                  setBrief(EXAMPLE);
+                  setError(null);
+                }}
               >
                 Example brief
               </button>

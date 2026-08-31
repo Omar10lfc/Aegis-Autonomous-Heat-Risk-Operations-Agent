@@ -1,5 +1,8 @@
 export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (typeof window !== "undefined" && window.location.port === "3000"
+    ? "http://localhost:8000"
+    : "");
 
 export interface JobAccepted {
   job_id: string;

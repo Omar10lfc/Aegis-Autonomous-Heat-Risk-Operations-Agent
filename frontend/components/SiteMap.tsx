@@ -26,15 +26,19 @@ export interface MapSite {
 // Rank-based color palette (hotter = more saturated warm)
 const RANK_COLORS = ["#e8703a", "#f2a25c", "#d8cf4a", "#7a8f6a"];
 
-// In-memory OSM raster style: no external style fetch, cannot hang.
+// High-performance dark basemap tiles (zero CORS / referrer restriction)
 const OSM_STYLE: maplibregl.StyleSpecification = {
   version: 8,
   sources: {
     osm: {
       type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tiles: [
+        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      ],
       tileSize: 256,
-      attribution: "© OpenStreetMap contributors",
+      attribution: "© OpenStreetMap © CARTO",
     },
   },
   layers: [
@@ -69,17 +73,12 @@ export default function SiteMap({ sites }: { sites: MapSite[] }) {
     map.on("load", () => {
       setStatus("ready");
       setErrMsg(null);
+      map.resize();
       tryDrawRef.current();
     });
-    map.on("styledata", () => tryDrawRef.current());
-    map.on("error", (e) => {
-      const err = String(
-        e.error instanceof Error
-          ? e.error.message
-          : JSON.stringify(e.error ?? "")
-      );
-      console.error("[SiteMap] error event", err);
-      setErrMsg(err);
+    map.on("styledata", () => {
+      map.resize();
+      tryDrawRef.current();
     });
 
     registerPopups(map);
@@ -90,7 +89,13 @@ export default function SiteMap({ sites }: { sites: MapSite[] }) {
     resizeHandlerRef.current = onResize;
     window.addEventListener("resize", onResize);
 
+    // Ensure map renders properly on mount
+    const resizeTimer = setTimeout(() => {
+      map.resize();
+    }, 150);
+
     return () => {
+      clearTimeout(resizeTimer);
       map.remove();
       mapRef.current = null;
       drawnSites.current = "";
