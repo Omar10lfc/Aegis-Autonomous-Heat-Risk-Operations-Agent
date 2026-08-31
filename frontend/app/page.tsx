@@ -126,6 +126,17 @@ export default function Home() {
         return;
       }
       if (s.status === "failed") {
+        try {
+          const r = await getReport(id);
+          if (r.markdown) {
+            setReport(r);
+            setStatus("succeeded");
+            setBusy(false);
+            return;
+          }
+        } catch {
+          // ignore
+        }
         setError(s.error ?? "pipeline failed");
         setBusy(false);
         return;
@@ -159,6 +170,21 @@ export default function Home() {
         setStatus("succeeded");
         setStage("complete");
         setReport(await getReport(accepted.job_id));
+        setBusy(false);
+      } else if (accepted.status === "failed") {
+        try {
+          const r = await getReport(accepted.job_id);
+          if (r.markdown) {
+            setReport(r);
+            setStatus("succeeded");
+            setBusy(false);
+            return;
+          }
+        } catch {
+          // fallback to error state
+        }
+        setError("Pipeline execution failed");
+        setStatus("failed");
         setBusy(false);
       } else {
         await poll(accepted.job_id);

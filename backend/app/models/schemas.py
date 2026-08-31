@@ -101,7 +101,7 @@ class BriefRequest(BaseModel):
 
 class JobAccepted(BaseModel):
     job_id: str
-    status: Literal["queued", "running", "succeeded"] = "queued"
+    status: Literal["queued", "running", "succeeded", "failed"] = "queued"
 
 
 class JobStatusResponse(BaseModel):

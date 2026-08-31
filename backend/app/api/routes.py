@@ -13,7 +13,7 @@ async def submit_brief(payload: BriefRequest, background_tasks: BackgroundTasks)
     record = create_job()
     if os.getenv("VERCEL"):
         await run_job(record.job_id, payload.brief, payload.as_of)
-        return JobAccepted(job_id=record.job_id, status="succeeded")
+        return JobAccepted(job_id=record.job_id, status=record.status)
     else:
         background_tasks.add_task(run_job, record.job_id, payload.brief, payload.as_of)
         return JobAccepted(job_id=record.job_id, status="queued")
@@ -33,5 +33,10 @@ async def job_report(job_id: str) -> ReportResponse:
     if record is None:
         raise HTTPException(status_code=404, detail="unknown job_id")
     if record.status != "succeeded":
-        raise HTTPException(status_code=409, detail=f"job is {record.status}")
+        if record.markdown:
+            return to_report(record)
+        raise HTTPException(
+            status_code=409,
+            detail=f"job is {record.status}: {record.error or 'no report available'}",
+        )
     return to_report(record)
