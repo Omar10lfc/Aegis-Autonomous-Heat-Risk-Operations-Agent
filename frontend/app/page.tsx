@@ -152,9 +152,17 @@ export default function Home() {
     setBusy(true);
     lastBrief.current = briefText;
     try {
-      const { job_id } = await submitBrief(briefText);
-      setJobId(job_id);
-      await poll(job_id);
+      const accepted = await submitBrief(briefText);
+      setJobId(accepted.job_id);
+      if (accepted.status === "succeeded") {
+        // Vercel sync path: job already completed, fetch report directly
+        setStatus("succeeded");
+        setStage("complete");
+        setReport(await getReport(accepted.job_id));
+        setBusy(false);
+      } else {
+        await poll(accepted.job_id);
+      }
     } catch (e) {
       setError(String(e));
       setBusy(false);
