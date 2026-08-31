@@ -6,11 +6,17 @@ from app.models.schemas import BriefRequest, JobAccepted, JobStatusResponse, Rep
 router = APIRouter()
 
 
+import os
+
 @router.post("/brief", response_model=JobAccepted)
 async def submit_brief(payload: BriefRequest, background_tasks: BackgroundTasks) -> JobAccepted:
     record = create_job()
-    background_tasks.add_task(run_job, record.job_id, payload.brief, payload.as_of)
-    return JobAccepted(job_id=record.job_id, status="queued")
+    if os.getenv("VERCEL"):
+        await run_job(record.job_id, payload.brief, payload.as_of)
+        return JobAccepted(job_id=record.job_id, status="succeeded")
+    else:
+        background_tasks.add_task(run_job, record.job_id, payload.brief, payload.as_of)
+        return JobAccepted(job_id=record.job_id, status="queued")
 
 
 @router.get("/status/{job_id}", response_model=JobStatusResponse)
