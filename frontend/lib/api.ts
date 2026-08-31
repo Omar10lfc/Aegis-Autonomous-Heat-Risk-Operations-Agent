@@ -1,9 +1,7 @@
 export const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL !== undefined
     ? process.env.NEXT_PUBLIC_BACKEND_URL
-    : typeof window !== "undefined"
-    ? ""
-    : "http://localhost:8000";
+    : "";
 
 export interface JobAccepted {
   job_id: string;
@@ -76,6 +74,14 @@ export interface Report {
   created_at: string;
 }
 
+function resolveApiUrl(path: string): string {
+  if (BACKEND_URL) {
+    return `${BACKEND_URL.replace(/\/+$/, "")}${path}`;
+  }
+  // When running on Vercel or same-origin domain, route to /api
+  return `/api${path}`;
+}
+
 async function handle<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const detail = await res.text();
@@ -85,7 +91,7 @@ async function handle<T>(res: Response): Promise<T> {
 }
 
 export async function submitBrief(brief: string): Promise<JobAccepted> {
-  const res = await fetch(`${BACKEND_URL}/brief`, {
+  const res = await fetch(resolveApiUrl("/brief"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ brief }),
@@ -94,14 +100,14 @@ export async function submitBrief(brief: string): Promise<JobAccepted> {
 }
 
 export async function getStatus(jobId: string): Promise<JobStatus> {
-  const res = await fetch(`${BACKEND_URL}/status/${jobId}`, {
+  const res = await fetch(resolveApiUrl(`/status/${jobId}`), {
     cache: "no-store",
   });
   return handle<JobStatus>(res);
 }
 
 export async function getReport(jobId: string): Promise<Report> {
-  const res = await fetch(`${BACKEND_URL}/report/${jobId}`, {
+  const res = await fetch(resolveApiUrl(`/report/${jobId}`), {
     cache: "no-store",
   });
   return handle<Report>(res);

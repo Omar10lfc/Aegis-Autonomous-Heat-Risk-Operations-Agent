@@ -24,11 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 1. Mount API Router & Endpoints FIRST
+# 1. Mount API Router & Endpoints FIRST (both root and /api prefix)
 app.include_router(router)
+app.include_router(router, prefix="/api")
 
 
 @app.get("/health")
+@app.get("/api/health")
 async def health() -> dict[str, str]:
     return {
         "status": "ok",
