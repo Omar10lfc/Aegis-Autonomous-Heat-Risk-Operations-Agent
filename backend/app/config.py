@@ -94,14 +94,14 @@ class Settings(BaseSettings):
         groq = {
             "provider": "groq",
             "api_key": self.groq_api_key,
-            "base_url": self.groq_base_url,
+            "base_url": self.groq_base_url or "https://api.groq.com/openai/v1",
             "models": self._model_list(self.groq_model, self.groq_fallback_models),
             "json_mode": True,
         }
         openrouter = {
             "provider": "openrouter",
             "api_key": self.openrouter_api_key,
-            "base_url": self.openrouter_base_url,
+            "base_url": self.openrouter_base_url or "https://openrouter.ai/api/v1",
             "models": self._model_list(self.openrouter_model, self.openrouter_fallback_models),
             "json_mode": False,
         }

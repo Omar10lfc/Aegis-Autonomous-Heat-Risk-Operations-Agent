@@ -29,10 +29,10 @@ def build_chat_model(settings: Settings, provider: dict[str, Any], model: str) -
     return ChatOpenAI(
         model=model,
         api_key=SecretStr(provider["api_key"]),
-        base_url=provider["base_url"],
+        base_url=provider.get("base_url") or "https://api.groq.com/openai/v1",
         temperature=0,
-        max_tokens=2000,
-        timeout=60,
+        max_tokens=1500,
+        timeout=4.0,
         max_retries=0,
         default_headers={
             "HTTP-Referer": "https://github.com/FortyGuard-Tech/temperature-api-quickstart",
@@ -57,14 +57,16 @@ async def complete_json(
             except LLMError as exc:
                 last_error = str(exc)
                 continue
-            delay = 2.0
-            for attempt in range(1, settings.aegis_max_retries + 1):
+            for attempt in range(1, 2):  # Fast 1-shot attempt per model
                 try:
-                    message = await llm.ainvoke(
-                        [
-                            {"role": "system", "content": system},
-                            {"role": "user", "content": user},
-                        ]
+                    message = await asyncio.wait_for(
+                        llm.ainvoke(
+                            [
+                                {"role": "system", "content": system},
+                                {"role": "user", "content": user},
+                            ]
+                        ),
+                        timeout=4.0,
                     )
                     parsed = _parse_json_message(message.content, schema)
                     return parsed, f"{provider['provider']}:{model}"
@@ -74,12 +76,8 @@ async def complete_json(
                     break
                 except Exception as exc:
                     last_error = f"{provider['provider']}:{model}: {exc}"
-                    text = str(exc)
-                    if "429" not in text and "rate" not in text.lower():
-                        logger.warning("llm error on %s: %s", f"{provider['provider']}:{model}", redact_value(text))
-                        break
-                    await asyncio.sleep(delay)
-                    delay = min(delay * 2, 20.0)
+                    logger.warning("llm error on %s: %s", f"{provider['provider']}:{model}", redact_value(str(exc)))
+                    break
     raise LLMError(last_error or "all LLM providers failed")
 
 
