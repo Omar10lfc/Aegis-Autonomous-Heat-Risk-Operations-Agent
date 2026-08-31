@@ -163,7 +163,12 @@ class FortyGuardClient:
         if self._upstream is not None:
             payload = await asyncio.to_thread(self._upstream.fetch_api_key_usage)
             return redact_value(payload)
-        return redact_value(await self._post("/v1/system/fetch-api-key-usage", {}))
+        return redact_value(
+            await self._post(
+                "/v1/system/fetch-api-key-usage",
+                {"api_key": self._settings.fortyguard_api_key},
+            )
+        )
 
     async def get_status(self, activity_id: str) -> dict[str, Any]:
         if not self._live:
