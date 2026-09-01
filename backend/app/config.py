@@ -53,25 +53,16 @@ class Settings(BaseSettings):
     @model_validator(mode="before")
     @classmethod
     def _coerce_empty_strings(cls, values: dict[str, Any]) -> dict[str, Any]:
-        """Vercel/Heroku set unset env vars as empty strings.
-        Pydantic rejects '' for bool/int/float fields, so we drop them
-        to let defaults apply."""
+        """Vercel injects unset env vars as empty strings.
+        Drop empty string values so class defaults always apply."""
         if not isinstance(values, dict):
             return values
-        bool_fields = {"fortyguard_live", "langchain_tracing_v2", "aegis_synth_llm"}
-        numeric_fields = {
-            "fortyguard_max_aoi_mi2", "aegis_port",
-            "aegis_poll_timeout_seconds", "aegis_max_retries",
-            "aegis_initial_poll_delay_seconds", "aegis_max_poll_delay_seconds",
-        }
-        drop_if_empty = bool_fields | numeric_fields
-        for key in drop_if_empty:
-            if key in values and values[key] == "":
-                del values[key]
-            # Also check uppercase variants (env vars)
-            upper = key.upper()
-            if upper in values and values[upper] == "":
-                del values[upper]
+        to_del = []
+        for k, v in values.items():
+            if isinstance(v, str) and v.strip() == "":
+                to_del.append(k)
+        for k in to_del:
+            del values[k]
         return values
 
     def tracing_endpoint(self) -> str:
@@ -82,11 +73,15 @@ class Settings(BaseSettings):
         return bool(self.groq_api_key or self.openrouter_api_key)
 
     def _model_list(self, primary: str, fallbacks: str) -> list[str]:
-        models = [primary]
-        for item in fallbacks.split(","):
+        models = []
+        if primary and primary.strip():
+            models.append(primary.strip())
+        for item in (fallbacks or "").split(","):
             slug = item.strip()
             if slug and slug not in models:
                 models.append(slug)
+        if not models:
+            models.append("openai/gpt-oss-20b")
         return models
 
     def provider_chain(self) -> list[dict[str, Any]]:
