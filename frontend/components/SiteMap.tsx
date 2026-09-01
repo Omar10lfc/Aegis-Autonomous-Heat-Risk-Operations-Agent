@@ -51,7 +51,7 @@ export default function SiteMap({ sites }: { sites: MapSite[] }) {
   const container = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const drawnSites = useRef<string>("");
-  const tryDrawRef = useRef<() => void>(() => {});
+  const tryDrawRef = useRef<() => void>(() => { });
   const resizeHandlerRef = useRef<(() => void) | null>(null);
   const [status, setStatus] = useState("loading");
   const [errMsg, setErrMsg] = useState<string | null>(null);
@@ -109,7 +109,7 @@ export default function SiteMap({ sites }: { sites: MapSite[] }) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || sites.length === 0) {
-      tryDrawRef.current = () => {};
+      tryDrawRef.current = () => { };
       return;
     }
     const key = sites.map((s) => s.label).join(",");
@@ -308,10 +308,9 @@ function registerPopups(map: maplibregl.Map) {
     }
     if (props.endpoint) {
       rows.push(
-        `<span style="color:#6b736b;font-size:10px">${prettifyEndpoint(props.endpoint)}${
-          props.activityId
-            ? ` · <code>${truncateId(props.activityId)}</code>`
-            : ""
+        `<span style="color:#6b736b;font-size:10px">${prettifyEndpoint(props.endpoint)}${props.activityId
+          ? ` · <code>${truncateId(props.activityId)}</code>`
+          : ""
         }</span>`
       );
     }
