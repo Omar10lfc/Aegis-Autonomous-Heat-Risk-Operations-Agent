@@ -26,22 +26,24 @@ export interface MapSite {
 // Rank-based color palette (hotter = more saturated warm)
 const RANK_COLORS = ["#e8703a", "#f2a25c", "#d8cf4a", "#7a8f6a"];
 
-// High-performance dark basemap tiles (100% free, no API key, zero watermarks)
+// High-detail vibrant street basemap tiles (100% free, zero watermarks)
 const OSM_STYLE: maplibregl.StyleSpecification = {
   version: 8,
   sources: {
-    esri_dark: {
+    osm_street: {
       type: "raster",
       tiles: [
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
       ],
       tileSize: 256,
-      attribution: "© Esri, © OpenStreetMap contributors",
+      attribution: "© OpenStreetMap contributors",
     },
   },
   layers: [
-    { id: "bg", type: "background", paint: { "background-color": "#101312" } },
-    { id: "esri_dark", type: "raster", source: "esri_dark" },
+    { id: "bg", type: "background", paint: { "background-color": "#e8ebe7" } },
+    { id: "osm_street", type: "raster", source: "osm_street" },
   ],
 };
 
