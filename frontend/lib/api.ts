@@ -1,5 +1,6 @@
 export const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
   (typeof window !== "undefined" && window.location.port === "3000"
     ? "http://localhost:8000"
     : "");

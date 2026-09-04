@@ -1,5 +1,6 @@
 import pytest
 
+# pyrefly: ignore [missing-import]
 from app.agent.graph import run_pipeline
 from app.agent.planner import heuristic_plan, infer_layer
 from app.config import Settings
@@ -58,3 +59,42 @@ async def test_cached_pipeline_emits_citations():
     assert any(c.get("activity_id") for c in result["citations"])
     assert any(c.get("endpoint") == "/v1/heatmap" for c in result["citations"])
     assert result.get("fortyguard_mode") == "cached"
+
+
+def test_forecast_plan_omits_env_params():
+    from datetime import timedelta
+    from app.agent.planner import PlannerDraft, draft_to_plan
+    from app.models.schemas import utc_now
+
+    future = utc_now() + timedelta(hours=2)
+    draft = PlannerDraft(
+        analysis_layer=AnalysisLayer.EXCEEDANCE,
+        client_framing="logistics",
+        heat_threshold_celsius=35.0,
+        filter_type=1,
+        start_date=future.strftime("%Y-%m-%d"),
+        start_time=future.strftime("%H:%M"),
+        site_ids=["phx_sky_harbor_yard"],
+        include_env_params=True,
+        rationale="testing forecast plan",
+    )
+    plan = draft_to_plan("test forecast", draft)
+    assert len(plan.heatmap_jobs) == 1
+    assert len(plan.env_params_jobs) == 0
+
+
+def test_template_memo_suppresses_empty_ranked_sites_on_validation():
+    from app.agent.planner import heuristic_plan
+    from app.agent.synthesizer import template_memo
+
+    plan = heuristic_plan("Test brief")
+    analysis = {
+        "layer": "exceedance",
+        "ranked_sites": [],
+        "validation_errors": ["start date/time is beyond horizon."],
+    }
+    memo = template_memo(plan, analysis, "heuristic")
+    assert "## Ranked Sites" not in memo
+    assert "## Validation" in memo
+    assert "start date/time is beyond horizon." in memo
+

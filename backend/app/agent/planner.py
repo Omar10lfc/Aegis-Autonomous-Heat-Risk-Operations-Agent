@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Literal
 
 from langsmith import traceable
@@ -11,7 +11,14 @@ from pydantic import BaseModel, Field
 
 from app.agent.llm import LLMError, complete_json
 from app.config import Settings
-from app.models.schemas import AnalysisLayer, DateTimeSpec, EnvParamsJobSpec, HeatmapJobSpec, TaskPlan
+from app.models.schemas import (
+    AnalysisLayer,
+    DateTimeSpec,
+    EnvParamsJobSpec,
+    HeatmapJobSpec,
+    TaskPlan,
+    utc_now,
+)
 from app.tools.catalog import DEFAULT_SITE_IDS, PHOENIX_SITES
 from app.tools.redact import redact_mapping
 
@@ -91,6 +98,19 @@ def draft_to_plan(brief: str, draft: PlannerDraft) -> TaskPlan:
     site_ids = [sid for sid in draft.site_ids if sid in PHOENIX_SITES] or DEFAULT_SITE_IDS
     heatmaps: list[HeatmapJobSpec] = []
     envs: list[EnvParamsJobSpec] = []
+
+    # FortyGuard /v1/heatmap allows up to 12h future forecast, but /v1/env_params
+    # is observation-only. Skip point sensors on forecast queries to avoid rejection.
+    is_forecast = False
+    try:
+        clock = dt.start_time or "00:00"
+        start_dt = datetime.strptime(f"{dt.start_date} {clock}", "%Y-%m-%d %H:%M").replace(
+            tzinfo=timezone.utc
+        )
+        is_forecast = start_dt > utc_now()
+    except Exception:
+        is_forecast = False
+
     for site_id in site_ids:
         site = PHOENIX_SITES[site_id]
         heatmaps.append(
@@ -104,7 +124,7 @@ def draft_to_plan(brief: str, draft: PlannerDraft) -> TaskPlan:
                 label=site.id,
             )
         )
-        if draft.include_env_params:
+        if draft.include_env_params and not is_forecast:
             envs.append(
                 EnvParamsJobSpec(
                     latitude=site.latitude,

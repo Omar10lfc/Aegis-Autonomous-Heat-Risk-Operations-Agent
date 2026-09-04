@@ -32,23 +32,24 @@ def template_memo(plan: TaskPlan, analysis: dict[str, Any], llm_model: str) -> s
         "",
         f"**Brief:** {plan.brief}",
         f"**Analysis Layer:** {layer} (FortyGuard Temperature API)",
-        "",
-        "## Ranked Sites",
     ]
-    for i, row in enumerate(analysis.get("ranked_sites") or [], start=1):
-        metric = (row.get("metric") or "value").replace("_", " ")
-        label = row.get("label") or "site"
-        pretty_label = label.replace("phx_", "Phoenix ").replace("_", " ").title()
-        max_val = row.get("max")
-        mean_val = row.get("mean")
-        units = row.get("units") or "hr"
-        if units == "hour":
-            units = "hr"
-        elif units == "celsius":
-            units = "°C"
-        lines.append(
-            f"{i}. **{pretty_label}** — {max_val} {units} {metric} (mean: {mean_val} {units})"
-        )
+    ranked = analysis.get("ranked_sites") or []
+    if ranked:
+        lines += ["", "## Ranked Sites"]
+        for i, row in enumerate(ranked, start=1):
+            metric = (row.get("metric") or "value").replace("_", " ")
+            label = row.get("label") or "site"
+            pretty_label = label.replace("phx_", "Phoenix ").replace("_", " ").title()
+            max_val = row.get("max")
+            mean_val = row.get("mean")
+            units = row.get("units") or "hr"
+            if units == "hour":
+                units = "hr"
+            elif units == "celsius":
+                units = "°C"
+            lines.append(
+                f"{i}. **{pretty_label}** — {max_val} {units} {metric} (mean: {mean_val} {units})"
+            )
     hottest = analysis.get("hottest") or {}
     if hottest:
         metric = (hottest.get("metric") or "value").replace("_", " ")
