@@ -6,7 +6,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg?logo=next.js&logoColor=white)](https://nextjs.org)
 [![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-FF6B6B.svg)](https://langchain.com)
 [![LangSmith](https://img.shields.io/badge/Observability-LangSmith-1C3C3C.svg)](https://smith.langchain.com)
-[![Tests](https://img.shields.io/badge/Tests-187%20Passed-4CAF50.svg)](file:///c:/Users/omarm/OneDrive/Desktop/aegis/backend/tests)
+[![Tests](https://img.shields.io/badge/Tests-189%20Passed-4CAF50.svg)](file:///c:/Users/omarm/OneDrive/Desktop/aegis/backend/tests)
 [![Evaluation](https://img.shields.io/badge/Benchmark-150%2F150%20(100%25)-brightgreen.svg)](file:///c:/Users/omarm/OneDrive/Desktop/aegis/scripts/evaluate_agent.py)
 
 ---
@@ -202,6 +202,7 @@ Aegis was developed, evaluated, and production-hardened using **58 full-lifecycl
 | **Phase 1: Graph Topology & Baseline Validation** | `2026-08-28` to `2026-08-30` | Traces `#1` – `#37` (37 runs) | Cached Local (`groq:openai/gpt-oss-20b`) | Proved LangGraph 4-node topology (`Planner` $\rightarrow$ `Executor` $\rightarrow$ `Analyzer` $\rightarrow$ `Synthesizer`). 36/37 runs succeeded with sub-2s latency. | Established strict Pydantic schemas, citation extraction, and zero-hallucination memo templates. |
 | **Phase 2: Live FortyGuard API Stress & Edge Failures** | `2026-08-31 00:48` to `04:43` | Traces `#38` – `#43` (6 runs) | Live FortyGuard Cloud API (`FORTYGUARD_LIVE=true`) | Live satellite rasterization required 15–30s per site. Vercel injected empty strings `""` for `GROQ_MODEL`, triggering fallbacks to OpenRouter free models which hit `429 Too Many Requests` and Vercel's 10s Serverless Function Timeout (`504`). | Identified need for synchronous serverless job flow, strict env sanitization, and bounded LLM timeouts. |
 | **Phase 3: Production Hardening, Guardrails & Sub-Second Latency** | `2026-08-31 18:12` to `19:00+` | Traces `#44` – `#58` (15 runs) | Production Vercel & Cached Engine | Evaluated hostile prompt injection jailbreaks, serverless cold-starts, and multi-tier failover. | 1. **Pydantic Env Coercion**: Stripped `""` env vars to guarantee valid Groq models.<br/>2. **LLM Timeout Capped to 4.0s**: Eliminated 60s backoff loops.<br/>3. **Instant Heuristic Fallback ($<1\text{ms}$)**: Guarantees 100% uptime if external LLMs are throttled.<br/>4. **Pre-LLM Guardrail Gating**: Intercepts jailbreaks in $<15\text{ms}$ (Traces `#48`, `#55`). |
+| **Phase 4: Real-World Operator Resilience & Safe Decoupling** | `2026-09-04 12:00` to `21:30` | Production Live Queries (`openai/gpt-oss-20b`) | Production Vercel & FortyGuard API Integration | Real-world operators asking for future periods (*"this afternoon"*, *"tomorrow"*) generated timestamps ahead of `utc_now()`. While FortyGuard's `/v1/heatmap` permits $\le 12\text{h}$ future forecasts, `/v1/env_params` point sensors strictly require past observations, triggering pre-flight validation blocks. | 1. **Forecast Point Decoupling**: Dynamic `start_dt > utc_now()` check in `draft_to_plan` automatically runs 12-hour predictive heatmaps while omitting observation-only point queries for future timestamps.<br/>2. **Universal Frontend API Fallback**: Added `NEXT_PUBLIC_API_URL` fallback in `lib/api.ts` to ensure zero-config compatibility across all deployment targets.<br/>3. **Validation-Aware Memo Assembly**: Conditionally renders `## Ranked Sites` only when sites exist, eliminating empty headers during advisories.<br/>4. **Test Suite Expansion**: Added unit tests in `test_graph.py` to achieve **189 / 189 passing tests**. |
 
 ---
 
@@ -210,7 +211,7 @@ Aegis was developed, evaluated, and production-hardened using **58 full-lifecycl
 | Pipeline Stage | Baseline / Live Latency | Production Optimized Latency | Optimization Mechanism |
 |---|:---:|:---:|---|
 | **Guardrails & Security Filter** | *Not present* | **$< 0.015\text{ s}$** | Pure in-memory AST pattern and lexical injection matching before LLM invocation. |
-| **Planner Node (LLM / Heuristic)** | $2.5\text{ s} - 30.0\text{ s}$ (429 retries) | **$0.15\text{ s}$ (Groq) / $<0.001\text{ s}$ (Fallback)** | 4.0s strict timeout ceiling + instant zero-shot deterministic heuristic fallback. |
+| **Planner Node (LLM / Heuristic)** | $2.5\text{ s} - 30.0\text{ s}$ (429 retries) | **$0.15\text{ s}$ (Groq) / $<0.001\text{ s}$ (Fallback)** | 4.0s strict timeout ceiling + instant zero-shot deterministic heuristic fallback + forecast sensor decoupling. |
 | **Executor Engine (Telemetry)** | $15.0\text{ s} - 35.0\text{ s}$ (Live async polling) | **$< 0.050\text{ s}$** | Authenticated zero-cost Phoenix microclimate spatial fixtures with sub-millisecond retrieval. |
 | **Analyzer Node (Thermal Ranking)** | $0.020\text{ s}$ | **$< 0.005\text{ s}$** | Vectorized temperature threshold sorting and OSHA thermal stress bracket classification. |
 | **Synthesizer Node (Executive Memo)** | $1.8\text{ s}$ (Uncached LLM polish) | **$< 0.010\text{ s}$** | Deterministic citation-linked memo assembly with guaranteed Activity ID cross-referencing. |
@@ -220,7 +221,7 @@ Aegis was developed, evaluated, and production-hardened using **58 full-lifecycl
 
 ## Testing & Evaluation Benchmark
 
-Aegis includes an extensive 150-scenario evaluation harness and 187 automated tests.
+Aegis includes an extensive 150-scenario evaluation harness and 189 automated tests.
 
 ### 1. Run 150-Scenario Benchmark Scorecard
 ```powershell
@@ -245,7 +246,7 @@ Aegis includes an extensive 150-scenario evaluation harness and 187 automated te
 .venv\Scripts\python.exe -m pytest backend/tests -q
 ```
 ```text
-187 passed in 4.10s
+189 passed in 4.10s
 ```
 
 ---
@@ -272,7 +273,7 @@ aegis/
 │   │   ├── tools/             # FortyGuard client, guardrails, geo utilities, redact
 │   │   ├── models/            # Pydantic schemas & data models
 │   │   └── main.py            # Application entrypoint
-│   └── tests/                 # 187 Pytest unit & integration tests
+│   └── tests/                 # 189 Pytest unit & integration tests
 ├── frontend/
 │   ├── app/                   # Next.js App Router (page.tsx, layout.tsx, globals.css)
 │   ├── components/            # SiteMap.tsx (MapLibre WebGL visualizer)
