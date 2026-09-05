@@ -11,7 +11,7 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 **Aegis** is an autonomous agent that translates unstructured, plain-English operational briefs into actionable, street-level heat risk intelligence. Powered by the **FortyGuard Temperature API**, Aegis identifies thermal hazards, calculates exceedance durations, ranks facility risk exposure, and generates executive operations memos with interactive map visualizations and audit-backed PDF reports.
 
@@ -287,13 +287,6 @@ aegis/
 └── vendor/                    # Cached FortyGuard API fixtures
 ```
 
----
-
-## Demo Video Guide
-
-For a step-by-step guide and curated prompts to test during demo recordings, refer to [`docs/DEMO_QUESTIONS.md`](docs/DEMO_QUESTIONS.md).
-
----
 
 ## 🛡️ License
 
