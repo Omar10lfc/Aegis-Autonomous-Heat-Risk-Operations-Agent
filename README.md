@@ -33,7 +33,7 @@ OPERATIONS BRIEF (Plain English)
 
 ---
 
-## 🎬 Demo Video
+## Demo Video
 
 > **Watch Aegis in action:** Real-time autonomous risk analysis, FortyGuard sensor citations, interactive MapLibre vector cartography, and instant executive PDF memo generation.
 
@@ -280,7 +280,6 @@ Aegis includes an extensive 150-scenario evaluation harness and 189 automated te
 
 ```
 aegis/
-├── Aegis-demo.mp4             # End-to-end live demo walkthrough video
 ├── backend/
 │   ├── app/
 │   │   ├── agent/             # LangGraph nodes: planner, executor, analyzer, synthesizer, graph
