@@ -33,17 +33,13 @@ OPERATIONS BRIEF (Plain English)
 
 ---
 
-## Demo Video
+## 🎬 Live Demo Walkthrough
+
+![Aegis Live Demo Walkthrough](Aegis-demo.gif)
 
 > **Watch Aegis in action:** Real-time autonomous risk analysis, FortyGuard sensor citations, interactive MapLibre vector cartography, and instant executive PDF memo generation.
 
-https://github.com/Omar10lfc/Aegis-Autonomous-Heat-Risk-Operations-Agent/raw/main/Aegis-demo.mp4
-
-<div align="center">
-  <video src="Aegis-demo.mp4" controls="controls" width="100%"></video>
-  <br/>
-  <p><a href="Aegis-demo.mp4">▶️ <b>Watch / Download Demo Video (Aegis-demo.mp4)</b></a></p>
-</div>
+<p align="center"><a href="Aegis-demo.mp4">▶️ <b>Direct High-Res Video Link (Aegis-demo.mp4)</b></a></p>
 
 ---
 
