@@ -33,6 +33,20 @@ OPERATIONS BRIEF (Plain English)
 
 ---
 
+## 🎬 Demo Video
+
+> **Watch Aegis in action:** Real-time autonomous risk analysis, FortyGuard sensor citations, interactive MapLibre vector cartography, and instant executive PDF memo generation.
+
+https://github.com/Omar10lfc/Aegis-Autonomous-Heat-Risk-Operations-Agent/raw/main/Aegis-demo.mp4
+
+<div align="center">
+  <video src="Aegis-demo.mp4" controls="controls" width="100%"></video>
+  <br/>
+  <p><a href="Aegis-demo.mp4">▶️ <b>Watch / Download Demo Video (Aegis-demo.mp4)</b></a></p>
+</div>
+
+---
+
 ## Core Features
 
 - **3 Specialized Analysis Layers**:
@@ -266,6 +280,7 @@ Aegis includes an extensive 150-scenario evaluation harness and 189 automated te
 
 ```
 aegis/
+├── Aegis-demo.mp4             # End-to-end live demo walkthrough video
 ├── backend/
 │   ├── app/
 │   │   ├── agent/             # LangGraph nodes: planner, executor, analyzer, synthesizer, graph
