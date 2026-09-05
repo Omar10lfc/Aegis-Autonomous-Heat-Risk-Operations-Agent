@@ -39,8 +39,6 @@ OPERATIONS BRIEF (Plain English)
 
 > **Watch Aegis in action:** Real-time autonomous risk analysis, FortyGuard sensor citations, interactive MapLibre vector cartography, and instant executive PDF memo generation.
 
-<p align="center"><a href="Aegis-demo.mp4">▶️ <b>Direct High-Res Video Link (Aegis-demo.mp4)</b></a></p>
-
 ---
 
 ## Core Features
